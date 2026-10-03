@@ -1,0 +1,7 @@
+torch
+torchvision
+opencv-python-headless
+numpy
+onnx
+onnxruntime
+qai-hub
