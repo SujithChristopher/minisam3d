@@ -1,0 +1,22 @@
+/data/
+/runs/
+/calib/
+/.venv/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# model artifacts (checkpoints, exports, AI Hub downloads) -- live under runs/ or are regenerable
+*.pt
+*.onnx
+*.onnx.zip
+*.data
+*.tflite
+*.bin
+aihub_out/
+
+# secrets / local
+.env
+*.log

@@ -49,7 +49,7 @@ def main():
                 break
             if i % a.stride == 0:
                 for name, mx, my, Kv in views:
-                    rel = os.path.join("images", stem, name, f"{i:07d}.jpg")
+                    rel = f"images/{stem}/{name}/{i:07d}.jpg"
                     os.makedirs(os.path.join(a.out, os.path.dirname(rel)), exist_ok=True)
                     cv2.imwrite(os.path.join(a.out, rel), cv2.remap(fr, mx, my, cv2.INTER_LINEAR),
                                 [cv2.IMWRITE_JPEG_QUALITY, 92])

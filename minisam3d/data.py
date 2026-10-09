@@ -20,14 +20,17 @@ UPPER_FOR_CROP = ["nose", "left_ear", "right_ear", "neck", "left_shoulder", "rig
 
 
 def load_labels(root):
-    cols = {}
-    for f in sorted(glob.glob(os.path.join(root, "labels", "shard_*.npz"))):
-        d = np.load(f, allow_pickle=False)
-        for k in d.files:
-            cols.setdefault(k, []).append(d[k])
-    if not cols:
+    shards = [dict(np.load(f, allow_pickle=False))
+              for f in sorted(glob.glob(os.path.join(root, "labels", "**", "shard_*.npz"), recursive=True))]
+    if not shards:
         raise FileNotFoundError(f"no shards under {root}/labels")
-    return {k: np.concatenate(v) for k, v in cols.items()}
+    # rotations (rot, R x 3 x 3) are optional: older shards get identity + has_rot False
+    rshape = next((s["rot"].shape[1:] for s in shards if "rot" in s), None)
+    for s in shards:
+        s["has_rot"] = np.full(len(s["image"]), "rot" in s)
+        if rshape and "rot" not in s:
+            s["rot"] = np.tile(np.eye(3, dtype=np.float32), (len(s["image"]), rshape[0], 1, 1))
+    return {k: np.concatenate([s[k] for s in shards]) for k in shards[0]}
 
 
 def crop_affine(center, size, rot_deg, out_w, out_h):
@@ -101,9 +104,20 @@ class PseudoLabelDataset(Dataset):
             crop = self._color(crop)
         x = torch.from_numpy(crop).permute(2, 0, 1).float() / 255.0
         w3d = np.where(in_img if not flip else in_img[js["flip"]], 1.0, 0.5).astype(np.float32)
-        return dict(img=x, uv=torch.from_numpy(uv.astype(np.float32)),
-                    vis=torch.from_numpy(vis.astype(np.float32)),
-                    xyz=torch.from_numpy(xyz.astype(np.float32)), w3d=torch.from_numpy(w3d))
+        out = dict(img=x, uv=torch.from_numpy(uv.astype(np.float32)),
+                   vis=torch.from_numpy(vis.astype(np.float32)),
+                   xyz=torch.from_numpy(xyz.astype(np.float32)), w3d=torch.from_numpy(w3d))
+        # segment rotations turn with the in-plane crop rotation; a mirrored left segment frame is not
+        # guaranteed to equal the right one, so flipped samples carry no rotation loss. Always returned
+        # (identity, weight 0 without labels) so datasets with and without rotations batch together.
+        if "rot" in L:
+            rot = (R @ L["rot"][i]).astype(np.float32)
+            wrot = np.full(len(rot), float(L["has_rot"][i] and not flip), np.float32)
+        else:
+            rot = np.tile(np.eye(3, dtype=np.float32), (js["num_rot"], 1, 1))
+            wrot = np.zeros(js["num_rot"], np.float32)
+        out.update(rot=torch.from_numpy(rot), wrot=torch.from_numpy(wrot))
+        return out
 
     def _path(self, rel):
         """Labels store images/<input dir name>/...; look under the label root first, then under

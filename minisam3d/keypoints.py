@@ -26,6 +26,17 @@ BONES = [
 ]
 
 
+# MHR skeleton joints whose global rotation the student distills (index into the 127 MHR joints).
+# c_spine3 is the upper thoracic segment, where NOARK's sternum rigid body sits (trunk angle).
+ROT_JOINTS = [
+    ("trunk", 37),
+    ("right_clavicle", 38), ("right_upper_arm", 39), ("right_forearm", 40), ("right_wrist", 42),
+    ("left_clavicle", 74), ("left_upper_arm", 75), ("left_forearm", 76), ("left_wrist", 78),
+]
+# MHR global rotations are in the body model's y-up axes; conjugate by this to get OpenCV camera axes
+MHR_TO_CAM = (1.0, -1.0, -1.0)
+
+
 def joint_set(hands: bool = False):
     js = BODY + (HANDS if hands else [])
     names = [n for n, _ in js]
@@ -41,4 +52,5 @@ def joint_set(hands: bool = False):
         flip.append(names.index(m))
     bones = [(names.index(a), names.index(b)) for a, b in BONES]
     return dict(names=names, mhr_idx=mhr_idx, flip=flip, root=names.index(ROOT),
-                bones=bones, num=len(names))
+                bones=bones, num=len(names), rot_names=[n for n, _ in ROT_JOINTS],
+                rot_idx=[i for _, i in ROT_JOINTS], num_rot=len(ROT_JOINTS))

@@ -39,11 +39,11 @@ subprocess.run([py, f"{HERE}/export_onnx.py", "--ckpt", f"{tmp}/run/last.pt", "-
 
 import onnxruntime as ort  # noqa: E402
 ck = torch.load(f"{tmp}/run/last.pt", map_location="cpu")
-m = Student(ck["K"]); m.load_state_dict(ck["model"]); m.eval()
+m = Student(ck["K"], dec_ch=ck["dec_ch"], head3d=ck["head3d"]); m.load_state_dict(ck["model"]); m.eval()
 x = torch.rand(1, 3, 256, 256)
-ref = m(x).detach()
-got = ort.InferenceSession(f"{tmp}/s.onnx").run(None, {"image": x.numpy()})[0]
-print("onnx max abs diff", float(np.abs(ref.numpy() - got).max()))
+ref = [t.detach() for t in m(x)]
+got = ort.InferenceSession(f"{tmp}/s.onnx").run(None, {"image": x.numpy()})
+print("onnx max abs diff", max(float(np.abs(r.numpy() - g).max()) for r, g in zip(ref, got)))
 uv_t, xyz_t, _ = decode(ref, ck["K"])
 uv_n, xyz_n, _ = decode_np(got, ck["K"])
 print("decode parity uv", float(np.abs(uv_t[0].numpy() - uv_n).max()), "xyz", float(np.abs(xyz_t[0].numpy() - xyz_n).max()))
@@ -78,8 +78,12 @@ open(os.path.join(fake, "__init__.py"), "w").close()
 open(os.path.join(fake, "utils.py"), "w").write('''
 import numpy as np
 class E:
-    def process_one_image(self, img, cam_int=None, inference_type="body"):
-        assert cam_int is not None and cam_int.shape == (1, 3, 3), "intrinsics not passed"
+    def process_one_image(self, img, bboxes=None, cam_int=None, inference_type="body"):
+        if cam_int is None:  # COCO run: must get GT boxes, no intrinsics
+            assert bboxes is not None and bboxes.shape == (1, 4), bboxes
+            return [dict(bbox=bboxes[0], pred_keypoints_2d=np.zeros((70, 2)), pred_keypoints_3d=np.zeros((70, 3)),
+                         pred_cam_t=np.zeros(3), focal_length=np.float32(100))]
+        assert cam_int.shape == (1, 3, 3), "intrinsics not passed"
         return [dict(bbox=np.array([0, 0, 120, 120.]), pred_keypoints_2d=np.zeros((70, 2)),
                      pred_keypoints_3d=np.zeros((70, 3)), pred_cam_t=np.zeros(3), focal_length=np.float32(100))]
 def setup_sam_3d_body(**kw):
@@ -92,4 +96,18 @@ r = subprocess.run(lab, check=True, env=env, capture_output=True, text=True)
 n = sum(len(np.load(f"{tmp}/lab/labels/{f}")["image"]) for f in os.listdir(f"{tmp}/lab/labels") if f.endswith(".npz"))
 assert n == 9 and "resuming: 9" in r.stderr, (n, r.stderr)
 print("labeler + resume OK")
+
+# ---- COCO boxes instead of the detector ----
+os.makedirs(f"{tmp}/coco_person")
+for k in range(3):
+    cv2.imwrite(f"{tmp}/coco_person/{k:012d}.jpg", np.zeros((300, 300, 3), np.uint8))
+json.dump(dict(images=[dict(id=k, file_name=f"{k:012d}.jpg") for k in range(3)],
+               annotations=[dict(image_id=0, category_id=1, iscrowd=0, bbox=[10, 10, 100, 250]),
+                            dict(image_id=1, category_id=1, iscrowd=0, bbox=[10, 10, 100, 50])]),
+          open(f"{tmp}/ann.json", "w"))
+subprocess.run([py, f"{HERE}/label_with_teacher.py", "--inputs", f"{tmp}/coco_person", "--out", f"{tmp}/lab_coco",
+                "--coco-ann", f"{tmp}/ann.json", "--no-fov"], check=True, env=env)
+d = np.load(f"{tmp}/lab_coco/labels/shard_00000.npz")
+assert len(d["image"]) == 1 and d["bbox"][0][3] == 260, d["bbox"]  # only the tall person survives
+print("coco boxes OK")
 print("SMOKE OK (mono/fisheye)")

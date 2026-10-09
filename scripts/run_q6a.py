@@ -40,7 +40,7 @@ class Runner:
             dl = [load_delegate(qnn_delegate, {"backend_type": "htp"})] if qnn_delegate else []
             self.s = Interpreter(model_path=path, experimental_delegates=dl, num_threads=4)
             self.s.allocate_tensors()
-            self.i, self.o = self.s.get_input_details()[0], self.s.get_output_details()[0]
+            self.i = self.s.get_input_details()[0]
             shp = self.i["shape"]
             self.nchw = shp[1] == 3
             self.C, self.H, self.W = (shp[1], shp[2], shp[3]) if self.nchw else (shp[3], shp[1], shp[2])
@@ -49,7 +49,8 @@ class Runner:
         """img_u8: (H,W,C) uint8, RGB or single-channel."""
         x = img_u8.reshape(self.H, self.W, -1).astype(np.float32) / 255.0
         if self.kind == ".onnx":
-            return self.s.run(None, {"image": x.transpose(2, 0, 1)[None]})[0]
+            outs = self.s.run(None, {"image": x.transpose(2, 0, 1)[None]})
+            return outs if len(outs) > 1 else outs[0]
         if self.nchw:
             x = x.transpose(2, 0, 1)
         x = x[None]
@@ -59,11 +60,16 @@ class Runner:
                         np.iinfo(self.i["dtype"]).max).astype(self.i["dtype"])
         self.s.set_tensor(self.i["index"], x)
         self.s.invoke()
-        y = self.s.get_tensor(self.o["index"])
-        if self.o["dtype"] != np.float32:
-            sc, zp = self.o["quantization"]
-            y = (y.astype(np.float32) - zp) * sc
-        return y if y.shape[1] != self.H // 4 else y.transpose(0, 3, 1, 2)  # NHWC -> NCHW
+        ys = []
+        for o in self.s.get_output_details():
+            y = self.s.get_tensor(o["index"])
+            if o["dtype"] != np.float32:
+                sc, zp = o["quantization"]
+                y = (y.astype(np.float32) - zp) * sc
+            if y.ndim == 4 and y.shape[1] == self.H // 4:
+                y = y.transpose(0, 3, 1, 2)  # NHWC -> NCHW
+            ys.append(y)
+        return ys if len(ys) > 1 else ys[0]
 
 
 def main():

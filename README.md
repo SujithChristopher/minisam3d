@@ -134,6 +134,26 @@ Loss (`minisam3d/losses.py`): L1 on soft-argmax 2D vs teacher, cross-entropy to 
 resumable labeling into Drive, resumable training, export, and AI Hub profiling. Labeling wants an A100 or L4;
 training runs fine on a T4.
 
+## 9. Running on an 8 GB laptop GPU (e.g. RTX 4060, native Windows or WSL2)
+
+The full teacher stack (SAM 3D Body + ViTDet detector + MoGe) likely does not fit in 8 GB. Drop the
+detector and MoGe and use bf16 (memory figures are estimates):
+
+```
+# COCO: ground-truth person boxes instead of the detector, default FOV instead of MoGe
+set PYTHONPATH=C:\path\to\sam-3d-body
+python scripts\label_with_teacher.py --inputs D:\coco\coco_person --out D:\msam_labels\coco ^
+    --coco-ann D:\coco\annotations\person_keypoints_train2017.json --no-fov --half
+# your fisheye footage: exact intrinsics from calibration; whole view = one person
+python scripts\label_with_teacher.py --inputs D:\own_views\images --out D:\msam_labels\own --no-detector --half
+# student
+python scripts\train.py --data D:\msam_labels\coco D:\msam_labels\own --repeat 1 4 ^
+    --image-dirs D:\coco D:\own_views --gray --pretrained --bs 128 --workers 4 --out runs\v1 --resume runs\v1\last.pt
+```
+
+Label paths are stored with forward slashes, so labels made on Windows also train on Colab or Linux.
+On Windows the labeler cannot always create symlinks, which is why `--image-dirs` points training at the images.
+
 ## Layout
 
 ```
