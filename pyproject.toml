@@ -1,0 +1,71 @@
+[project]
+name = "minisam3d"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "SujithChristopher", email = "chrisbon95@gmail.com" }
+]
+requires-python = ">=3.13"
+# One file for both the training PC (Windows/Linux x86_64, CUDA torch) and the Radxa Dragon Q6A (Linux aarch64,
+# CPU torch + onnxruntime-qnn for the Hexagon NPU). uv.lock is universal, so the same lock serves both.
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.17.1",
+    "opencv-contrib-python>=4.13.0.92",
+    "msgpack>=1.1.2",
+    "msgpack-numpy>=0.4.8",
+    "toml>=0.10.2",
+    "tqdm>=4.67.3",
+    "torch>=2.11.0",
+    "torchvision>=0.26.0",
+    "onnx>=1.22.0",
+    "onnxruntime>=1.20",
+    "qai-hub>=0.53.0",
+    # board only: QNN EP + v68 HTP libs (cp313 aarch64 wheel; no QAIRT SDK needed)
+    "onnxruntime-qnn>=2.4.0; platform_machine == 'aarch64'",
+    # desktop only: notebooks, analysis, teacher labelling, rendering
+    "ipykernel>=7.2.0; platform_machine != 'aarch64'",
+    "jupyter>=1.1.1; platform_machine != 'aarch64'",
+    "joblib>=1.5.3; platform_machine != 'aarch64'",
+    "matplotlib>=3.10.8; platform_machine != 'aarch64'",
+    "pandas>=3.0.2; platform_machine != 'aarch64'",
+    "polars>=1.40.0; platform_machine != 'aarch64'",
+    "more-itertools>=10.7.0; platform_machine != 'aarch64'",
+    "requests>=2.34.2; platform_machine == 'x86_64' or platform_machine == 'AMD64'",
+    "pycocotools>=2.0.11; platform_machine == 'x86_64' or platform_machine == 'AMD64'",
+    "pyrender>=0.1.45; platform_machine == 'x86_64'",
+    "smplx>=0.1.28; platform_machine == 'x86_64'",
+    "trimesh>=4.12.2; platform_machine == 'x86_64'",
+    "maturin>=1.14.1; platform_machine == 'x86_64'",
+    "fiftyone>=1.19.0; platform_machine == 'x86_64'",
+]
+
+# CUDA torch on the PC. On aarch64, PyPI's torch is the CUDA build for Grace Hopper (~5GB of nvidia-* wheels),
+# so the board takes the CPU index instead.
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "platform_machine != 'aarch64'" },
+  { index = "pytorch-cpu", marker = "platform_machine == 'aarch64'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "platform_machine != 'aarch64'" },
+  { index = "pytorch-cpu", marker = "platform_machine == 'aarch64'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[project.scripts]
+minisam3d = "minisam3d:main"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"

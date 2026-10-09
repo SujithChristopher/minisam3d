@@ -82,6 +82,9 @@ Loss (`minisam3d/losses.py`): L1 on soft-argmax 2D vs teacher, cross-entropy to 
 
 ## 4. Deployment toolchain
 
+> Superseded on the board by the QDQ ONNX + `onnxruntime-qnn` path, with measured NPU benchmarks:
+> see [docs/npu.md](docs/npu.md). The TFLite route below is kept for reference.
+
 1. `scripts/export_onnx.py` → static 1x3xHxW ONNX.
 2. `scripts/aihub_compile.py` → AI Hub quantize job (INT8 weights, INT8 or INT16 activations, calibrated on
    pseudo-labelled crops) → compile for `QCS6490 (Proxy)` → profile on a real device → download `.tflite`
