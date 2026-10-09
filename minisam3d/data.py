@@ -33,6 +33,19 @@ def load_labels(root):
     return {k: np.concatenate([s[k] for s in shards]) for k in shards[0]}
 
 
+_PACKS = {}
+
+
+def read_pack(root, off, flags):
+    """Decode one PNG from <root>/pack.bin at off = (start, length). One handle per process (DataLoader workers)."""
+    key = (os.getpid(), root)
+    if key not in _PACKS:
+        _PACKS[key] = open(os.path.join(root, "pack.bin"), "rb")
+    f = _PACKS[key]
+    f.seek(int(off[0]))
+    return cv2.imdecode(np.frombuffer(f.read(int(off[1])), np.uint8), flags)
+
+
 def crop_affine(center, size, rot_deg, out_w, out_h):
     """2x3 affine mapping a (size*out_w/out_h, size) box at center, rotated, to the output crop."""
     s = out_h / size
@@ -57,12 +70,18 @@ class PseudoLabelDataset(Dataset):
 
     def __getitem__(self, i):
         L, js = self.L, self.js
-        img = cv2.imread(self._path(str(L["image"][i])), cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        if "crop_off" in L:  # scripts/pack_noark.py: a crop around the subject, kp2d already in its pixels
+            img = cv2.cvtColor(read_pack(self.root, L["crop_off"][i], cv2.IMREAD_GRAYSCALE), cv2.COLOR_GRAY2RGB)
+        else:
+            img = cv2.imread(self._path(str(L["image"][i])), cv2.IMREAD_COLOR)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         H, W = img.shape[:2]
         kp2d = L["kp2d"][i][self.idx].astype(np.float64)
         kp3d = L["kp3d"][i][self.idx].astype(np.float32)
-        in_img = (kp2d[:, 0] >= 0) & (kp2d[:, 0] < W) & (kp2d[:, 1] >= 0) & (kp2d[:, 1] < H)
+        if "in_img" in L:  # inside the original frame, not the pack crop
+            in_img = L["in_img"][i][self.idx]
+        else:
+            in_img = (kp2d[:, 0] >= 0) & (kp2d[:, 0] < W) & (kp2d[:, 1] >= 0) & (kp2d[:, 1] < H)
 
         # crop box around the upper body (what the on-device tracker will produce)
         pts = kp2d[self.crop_ids][in_img[self.crop_ids]]

@@ -41,21 +41,29 @@ dependencies = [
     "fiftyone>=1.19.0; platform_machine == 'x86_64'",
 ]
 
-# CUDA torch on the PC. On aarch64, PyPI's torch is the CUDA build for Grace Hopper (~5GB of nvidia-* wheels),
-# so the board takes the CPU index instead.
+# CUDA 13 torch on the Windows PC. Linux x86_64 (the A16 training box, driver 550 = CUDA 12.4) takes cu126;
+# cu130 needs driver >= 580. On aarch64, PyPI's torch is the CUDA build for Grace Hopper (~5GB of nvidia-*
+# wheels), so the board takes the CPU index instead.
 [tool.uv.sources]
 torch = [
-  { index = "pytorch-cu130", marker = "platform_machine != 'aarch64'" },
-  { index = "pytorch-cpu", marker = "platform_machine == 'aarch64'" },
+  { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+  { index = "pytorch-cpu", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
 torchvision = [
-  { index = "pytorch-cu130", marker = "platform_machine != 'aarch64'" },
-  { index = "pytorch-cpu", marker = "platform_machine == 'aarch64'" },
+  { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+  { index = "pytorch-cpu", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
 ]
 
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
 [[tool.uv.index]]
@@ -69,3 +77,8 @@ minisam3d = "minisam3d:main"
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "paramiko>=5.0.0",
+]
