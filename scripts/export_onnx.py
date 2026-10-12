@@ -6,10 +6,34 @@ import argparse
 import os
 import sys
 
+import onnx
 import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from minisam3d.model import Student  # noqa: E402
+
+
+def unshare_initializers(path):
+    """Give every node its own copy of each initializer. The exporter merges equal constants (e.g. the
+    folded biases of untrained BN layers), and AI Hub's AIMET quantizer rejects shared bias tensors."""
+    m = onnx.load(path)
+    g, inits = m.graph, {t.name: t for t in m.graph.initializer}
+    seen, n_new = set(), 0
+    for node in g.node:
+        for k, name in enumerate(node.input):
+            if name not in inits:
+                continue
+            if name in seen:
+                t = onnx.TensorProto()
+                t.CopyFrom(inits[name])
+                t.name = f"{name}_dup{n_new}"
+                g.initializer.append(t)
+                node.input[k] = t.name
+                n_new += 1
+            seen.add(name)
+    if n_new:
+        onnx.save(m, path)
+    return n_new
 
 
 def main():
@@ -20,22 +44,25 @@ def main():
     ap.add_argument("--joints", type=int, default=14)
     ap.add_argument("--width", type=float, default=1.0)
     ap.add_argument("--in-ch", type=int, default=3)
+    ap.add_argument("--backbone", default="mbv2", choices=["mbv2", "resnet18"])
+    ap.add_argument("--rot", type=int, default=0, help="rotation outputs (9 for --rot students)")
     a = ap.parse_args()
     if a.ckpt:
         ck = torch.load(a.ckpt, map_location="cpu")
         if ck.get("arch") != "v2":
             sys.exit("checkpoint is from the v1 model; export it with the v1 code (git history)")
         m = Student(ck["K"], width=ck["width"], in_ch=ck.get("in_ch", 3), dec_ch=ck["dec_ch"], head3d=ck["head3d"],
-                    num_rot=ck.get("num_rot", 0))
+                    num_rot=ck.get("num_rot", 0), backbone=ck.get("backbone", "mbv2"))
         m.load_state_dict(ck["model"])
         H, W = ck["size"]
     else:
-        m, (H, W) = Student(a.joints, width=a.width, in_ch=a.in_ch), a.size
+        m, (H, W) = Student(a.joints, width=a.width, in_ch=a.in_ch, num_rot=a.rot,
+                                backbone=a.backbone), a.size
     m.eval()
-    torch.onnx.export(m, torch.rand(1, m.s4[0][0].in_channels, H, W), a.out, input_names=["image"],
+    torch.onnx.export(m, torch.rand(1, m.in_ch, H, W), a.out, input_names=["image"],
                       output_names=(["maps", "xyz"] if m.head3d == "global" else ["maps"]) + (["rot"] if m.num_rot else []),
                       opset_version=17, dynamo=False)
-    print("wrote", a.out)
+    print("wrote", a.out, f"({unshare_initializers(a.out)} shared initializers duplicated)")
 
 
 if __name__ == "__main__":

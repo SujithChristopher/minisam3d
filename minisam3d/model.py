@@ -1,4 +1,4 @@
-"""Student: MobileNetV2 + FPN-lite decoder -> per-joint heatmaps, plus root-relative 3D.
+"""Student: MobileNetV2 (or ResNet-18) + FPN-lite decoder -> per-joint heatmaps, plus root-relative 3D.
 
 Only conv / BN / ReLU6 / nearest-upsample / add, so it quantizes cleanly to
 INT8 and every op runs on the Hexagon HTP. Decoding (soft-argmax) is done
@@ -29,15 +29,25 @@ class Student(nn.Module):
     """
 
     def __init__(self, num_joints=14, width=1.0, dec_ch=128, pretrained=False, in_ch=3, head3d="global",
-                 num_rot=0):
+                 num_rot=0, backbone="mbv2"):
         super().__init__()
-        if pretrained and width != 1.0:
-            print("warning: torchvision has ImageNet weights only for width 1.0; training from scratch")
-        weights = "IMAGENET1K_V1" if pretrained and width == 1.0 else None
-        mb = torchvision.models.mobilenet_v2(weights=weights, width_mult=width).features
-        self._fold_input(mb, in_ch)
-        # stride 4 / 8 / 16 / 32 taps
-        self.s4, self.s8, self.s16, self.s32 = mb[:4], mb[4:7], mb[7:14], mb[14:18]
+        self.backbone, self.in_ch = backbone, in_ch
+        if backbone == "mbv2":
+            if pretrained and width != 1.0:
+                print("warning: torchvision has ImageNet weights only for width 1.0; training from scratch")
+            weights = "IMAGENET1K_V1" if pretrained and width == 1.0 else None
+            mb = torchvision.models.mobilenet_v2(weights=weights, width_mult=width).features
+            self._fold_input(mb, in_ch)
+            # stride 4 / 8 / 16 / 32 taps
+            self.s4, self.s8, self.s16, self.s32 = mb[:4], mb[4:7], mb[7:14], mb[14:18]
+        elif backbone == "resnet18":
+            # plain 3x3 conv / BN / ReLU / maxpool / add: as HTP-friendly as MobileNetV2, about 3x the MACs
+            rn = torchvision.models.resnet18(weights="IMAGENET1K_V1" if pretrained else None)
+            rn.conv1 = self._folded_conv(rn.conv1, in_ch)
+            self.s4 = nn.Sequential(rn.conv1, rn.bn1, rn.relu, rn.maxpool, rn.layer1)
+            self.s8, self.s16, self.s32 = rn.layer2, rn.layer3, rn.layer4
+        else:
+            raise ValueError(f"unknown backbone {backbone}")
         c4, c8, c16, c32 = [self._out_ch(m) for m in (self.s4, self.s8, self.s16, self.s32)]
         self.lat32 = cbr(c32, dec_ch, 1)
         self.lat16 = cbr(c16, dec_ch, 1)
@@ -62,17 +72,20 @@ class Student(nn.Module):
 
     @staticmethod
     def _fold_input(mb, in_ch):
-        """Replace the first conv so it takes raw [0,1] input: w' = w/std, bias = -sum(w*mean/std).
+        mb[0][0] = Student._folded_conv(mb[0][0], in_ch)
+
+    @staticmethod
+    def _folded_conv(c0, in_ch):
+        """The first conv rebuilt to take raw [0,1] input: w' = w/std, bias = -sum(w*mean/std).
         For in_ch=1 (mono) the RGB filters are summed, i.e. the gray image is treated as R=G=B."""
-        c0 = mb[0][0]
         mean = torch.tensor(IMAGENET_MEAN).view(1, 3, 1, 1)
         std = torch.tensor(IMAGENET_STD).view(1, 3, 1, 1)
-        new = nn.Conv2d(in_ch, c0.out_channels, 3, 2, 1, bias=True)
+        new = nn.Conv2d(in_ch, c0.out_channels, c0.kernel_size, c0.stride, c0.padding, bias=True)
         with torch.no_grad():
             w = c0.weight / std
             new.weight.copy_(w if in_ch == 3 else w.sum(1, keepdim=True).repeat(1, in_ch, 1, 1) / in_ch)
             new.bias.copy_(-(c0.weight * mean / std).sum((1, 2, 3)))
-        mb[0][0] = new
+        return new
 
     @staticmethod
     def _out_ch(seq):

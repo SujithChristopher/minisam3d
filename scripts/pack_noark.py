@@ -30,10 +30,13 @@ PACK_SIDE = 2.0  # pack crop side / training box side
 
 def takes(session):
     out = {}
-    for d in sorted(glob.glob(os.path.join(session, "*_woc", "sam3d"))):
+    # sep23 layout: <session>/<subj>_w(o)c, noark_game/data/<subj>/...; oct layout: std_movement/..., game/<subj>/...
+    for d in sorted(glob.glob(os.path.join(session, "*_wc", "sam3d")) + glob.glob(os.path.join(session, "*_woc", "sam3d"))
+                    + glob.glob(os.path.join(session, "std_movement", "*_w*c", "sam3d"))):
         out[os.path.basename(os.path.dirname(d))] = d
-    for d in sorted(glob.glob(os.path.join(session, "noark_game", "data", "*", "Session-*", "Video", "rec_*", "sam3d"))):
-        out[d.replace("\\", "/").split("/noark_game/data/")[1].split("/")[0] + "_game"] = d
+    for pat in (("noark_game", "data"), ("game",)):
+        for d in sorted(glob.glob(os.path.join(session, *pat, "*", "Session-*", "Video", "rec_*", "sam3d"))):
+            out[os.path.relpath(d, os.path.join(session, *pat)).replace("\\", "/").split("/")[0] + "_game"] = d
     return {k: v for k, v in out.items() if os.path.exists(os.path.join(v, "sam3d_out.npz"))}
 
 

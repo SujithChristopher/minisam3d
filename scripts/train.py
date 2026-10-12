@@ -23,7 +23,8 @@ def main():
                     help="per --data oversampling factor, e.g. 1 4 to weight your own footage 4x")
     ap.add_argument("--out", default="runs/v1")
     ap.add_argument("--size", type=int, nargs=2, default=[256, 256], metavar=("H", "W"))
-    ap.add_argument("--width", type=float, default=1.0)
+    ap.add_argument("--backbone", default="mbv2", choices=["mbv2", "resnet18"])
+    ap.add_argument("--width", type=float, default=1.0, help="MobileNetV2 width multiplier")
     ap.add_argument("--dec-ch", type=int, default=128)
     ap.add_argument("--head3d", default="global", choices=["global", "loc"])
     ap.add_argument("--rot", action="store_true", help="also distill the teacher's global rotations of the trunk "
@@ -64,7 +65,7 @@ def main():
     in_ch = 1 if a.gray else 3
     num_rot = js["num_rot"] if a.rot else 0
     model = Student(js["num"], width=a.width, dec_ch=a.dec_ch, pretrained=a.pretrained, in_ch=in_ch,
-                    head3d=a.head3d, num_rot=num_rot).to(dev)
+                    head3d=a.head3d, num_rot=num_rot, backbone=a.backbone).to(dev)
     if a.init:  # e.g. a keypoint-only checkpoint; new heads (rotation) start from scratch
         miss, unexp = model.load_state_dict(torch.load(a.init, map_location=dev)["model"], strict=False)
         print(f"init from {a.init}: missing {len(miss)} keys {sorted({k.split('.')[0] for k in miss})}, "
@@ -116,7 +117,7 @@ def main():
                 print("   per rotation joint (val deg): " + ", ".join(
                     f"{n} {d:.1f}" for n, d in zip(js["rot_names"], agg["deg_joint"])), flush=True)
         ck = dict(model=model.state_dict(), K=js["num"], hands=a.hands, size=(H, W), width=a.width, in_ch=in_ch,
-                  dec_ch=a.dec_ch, head3d=a.head3d, num_rot=num_rot, arch="v2")
+                  dec_ch=a.dec_ch, head3d=a.head3d, num_rot=num_rot, arch="v2", backbone=a.backbone)
         score = agg.get("rot_deg", agg["mpjpe_mm"])  # with --rot, keep the checkpoint with the best rotations
         if score < best:
             best = score

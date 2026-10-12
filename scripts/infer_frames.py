@@ -38,7 +38,7 @@ def main():
     a = ap.parse_args()
     ck = torch.load(a.ckpt, map_location="cpu", weights_only=False)
     m = Student(ck["K"], width=ck["width"], in_ch=ck["in_ch"], dec_ch=ck["dec_ch"], head3d=ck["head3d"],
-                num_rot=ck.get("num_rot", 0))
+                num_rot=ck.get("num_rot", 0), backbone=ck.get("backbone", "mbv2"))
     m.load_state_dict(ck["model"])
     m.eval().to(a.device)
     js = joint_set(ck["hands"])
