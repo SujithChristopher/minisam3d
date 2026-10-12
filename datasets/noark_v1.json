@@ -1,0 +1,260 @@
+{
+ "name": "noark_v1",
+ "created": "2026-10-12",
+ "note": "sep23 game + woc takes of 5 subjects (what v3rot_loso_* and r18b_loso_* trained on, minus the held-out subject) + COCO 2014 teacher labels. COCO images are not pinned (data/images).",
+ "splits": {
+  "train": [
+   "coco2014_vith",
+   "noark_pack/diwakar_game",
+   "noark_pack/gokul_game",
+   "noark_pack/js_game",
+   "noark_pack/kabil_game",
+   "noark_pack/ram_game",
+   "noark_pack/diwakar_woc",
+   "noark_pack/gokul_woc",
+   "noark_pack/js_woc",
+   "noark_pack/kabil_woc",
+   "noark_pack/ram_woc"
+  ]
+ },
+ "roots": {
+  "coco2014_vith": {
+   "frames": 15021,
+   "files": {
+    "labels/shard_00000.npz": {
+     "bytes": 3891894,
+     "sha256": "8e249b71ff812937d341a721c6b3790c62e9fea66cf20bff74a15109ca891a11"
+    },
+    "labels/shard_00001.npz": {
+     "bytes": 3889950,
+     "sha256": "ea7ee33d11b8c24feeb237b100d040c8c96f5f9c04ed39ca72e55097ea4712eb"
+    },
+    "labels/shard_00002.npz": {
+     "bytes": 3889950,
+     "sha256": "d66a2a7b087289154e3f029ebcfd2684ed5a05794fbeeba32330e81f6f09cf1a"
+    },
+    "labels/shard_00003.npz": {
+     "bytes": 3889950,
+     "sha256": "c3bf1f9fbe42754828bde1fc93ff6f482e51abe071a4b6369dc129d18dbddc0d"
+    },
+    "labels/shard_00004.npz": {
+     "bytes": 3889950,
+     "sha256": "2eb2b74cda8119b4e42b1b8826157474507084c57cf748fca515c6436113c116"
+    },
+    "labels/shard_00005.npz": {
+     "bytes": 3891894,
+     "sha256": "5c886d22f325bb6a79b67d7f72b0ddc78022fcf6fb8b7dbfc17859e6ec781bf7"
+    },
+    "labels/shard_00006.npz": {
+     "bytes": 3889950,
+     "sha256": "2d7327ea39bcd5a2506cd3617a33b736e3fddb9152590fcdeeffe2627e3871f9"
+    },
+    "labels/shard_00007.npz": {
+     "bytes": 1982886,
+     "sha256": "41f53c4d83cee0f907aa63c26a05f0f401cb7ac70ce5af08f153f1c95729ed60"
+    }
+   }
+  },
+  "noark_pack/diwakar_game": {
+   "frames": 2598,
+   "files": {
+    "pack.bin": {
+     "bytes": 199756140,
+     "sha256": "049775994821e1b9509a2023a798acf47740c278c7d847a0c7ae80bbe15ef137"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5236280,
+     "sha256": "81319ee8ba6e704ded621abd1046ea89f23f17f088e8ab808dbb9657750a8220"
+    }
+   },
+   "subject": "diwakar",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/diwakar_woc": {
+   "frames": 1497,
+   "files": {
+    "pack.bin": {
+     "bytes": 126381528,
+     "sha256": "1591a3078d436ffea4c38c9c3089b7ed8e76bb6e004ba7db3b4803ecb9a22aaf"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3012878,
+     "sha256": "d9d08c7af2a6f8ebe830ec5f11f5e1fadcec1c4b59b4824f027bd339c13d05bc"
+    }
+   },
+   "subject": "diwakar",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/gokul_game": {
+   "frames": 2775,
+   "files": {
+    "pack.bin": {
+     "bytes": 214377392,
+     "sha256": "d481844f3bf3b8615a8c5e7350fe1ed996add7862d9d9edc0d6af76d85ef6295"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5570558,
+     "sha256": "7041b46387d81316092295283594d53285b0ac5f4a184967c0240ef80eb9fe8e"
+    }
+   },
+   "subject": "gokul",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/gokul_woc": {
+   "frames": 1638,
+   "files": {
+    "pack.bin": {
+     "bytes": 135114252,
+     "sha256": "00e1cb560c4799a5872574859036864a3ba48fb69c697781defcb57282638bb2"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3283184,
+     "sha256": "bde57c36042f8ac966fbffffaa246a2f5ad47d883548b26247b7912373e2092d"
+    }
+   },
+   "subject": "gokul",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/js_game": {
+   "frames": 2865,
+   "files": {
+    "pack.bin": {
+     "bytes": 215847783,
+     "sha256": "b3bcae0b2241de29e6b21e27dafe1932e7b7e08032ec89bf6ac30c8cef11267a"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5716718,
+     "sha256": "29555a52a435001ee57819067701e97654ffd1bbbbd56adc555b57037b085cee"
+    }
+   },
+   "subject": "js",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/js_woc": {
+   "frames": 1677,
+   "files": {
+    "pack.bin": {
+     "bytes": 140361822,
+     "sha256": "b4fa4891ba285f9d5910fef8df42d10ed6970f8351900a4016d01421dd753499"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3341138,
+     "sha256": "8516af09761bbbb930d7aa6cb02994976c029983da33049c53b112ac4199713c"
+    }
+   },
+   "subject": "js",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/kabil_game": {
+   "frames": 2836,
+   "files": {
+    "pack.bin": {
+     "bytes": 219306708,
+     "sha256": "2054321996b890dfaabcd0bb25ee058498e47b7b54592f371601cf638ffb514c"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5692924,
+     "sha256": "8d12305f59509d297ed8576e3c287886e74d6b9533b79848fda4081ff75ab0f9"
+    }
+   },
+   "subject": "kabil",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/kabil_woc": {
+   "frames": 798,
+   "files": {
+    "pack.bin": {
+     "bytes": 65153225,
+     "sha256": "21561ec4e9e3d56efe93f44916fb39834dc2cea629932e736e884b09a1f1cf8a"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 1598312,
+     "sha256": "04f404aa003dfc565453b3223048c3430ddce97b70d8f71541cb8b99995bc199"
+    }
+   },
+   "subject": "kabil",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/ram_game": {
+   "frames": 2806,
+   "files": {
+    "pack.bin": {
+     "bytes": 210189312,
+     "sha256": "be1bf516152515223da559dde315171854eb2c7cda4071e27bbb239217e2c645"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5610296,
+     "sha256": "0277949abc4979f8837a52e3a597fb5c3310f9c6e8cc30288bafafa81fe930e2"
+    }
+   },
+   "subject": "ram",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/ram_woc": {
+   "frames": 1282,
+   "files": {
+    "pack.bin": {
+     "bytes": 105720062,
+     "sha256": "b8df7a8c103522674cfcbd46fc1fb96452d6c4632ea3d31c4c506b9914a08112"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2560216,
+     "sha256": "a3ddae92ce2ca0bb3bc55b95067fae7b57a76d932e7811297dc314ab04709bd6"
+    }
+   },
+   "subject": "ram",
+   "session": "sep23",
+   "kind": "woc"
+  }
+ },
+ "id": "noark_v1@23acecce"
+}

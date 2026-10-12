@@ -1,0 +1,808 @@
+{
+ "name": "noark_v2",
+ "created": "2026-10-12",
+ "note": "v1 + sep23 _wc takes + oct9/oct10 takes of the 4 sep23 subjects (s3_ = same person). Test: oct takes of arjun, jerome, lee, never trained on. COCO images are not pinned (data/images).",
+ "splits": {
+  "train": [
+   "coco2014_vith",
+   "noark_pack/diwakar_game",
+   "noark_pack/diwakar_wc",
+   "noark_pack/diwakar_woc",
+   "noark_pack/gokul_game",
+   "noark_pack/gokul_wc",
+   "noark_pack/gokul_woc",
+   "noark_pack/js_game",
+   "noark_pack/js_wc",
+   "noark_pack/js_woc",
+   "noark_pack/kabil_game",
+   "noark_pack/kabil_wc",
+   "noark_pack/kabil_woc",
+   "noark_pack/ram_game",
+   "noark_pack/ram_wc",
+   "noark_pack/ram_woc",
+   "noark_pack_oct/s3_diwakar_game",
+   "noark_pack_oct/s3_diwakar_wc",
+   "noark_pack_oct/s3_diwakar_woc",
+   "noark_pack_oct/s3_gokul_game",
+   "noark_pack_oct/s3_gokul_wc",
+   "noark_pack_oct/s3_gokul_woc",
+   "noark_pack_oct/s3_js_game",
+   "noark_pack_oct/s3_js_wc",
+   "noark_pack_oct/s3_js_woc",
+   "noark_pack_oct/s3_ram_game",
+   "noark_pack_oct/s3_ram_wc",
+   "noark_pack_oct/s3_ram_woc"
+  ],
+  "test": [
+   "noark_pack_oct/s3_arjun_game",
+   "noark_pack_oct/s3_arjun_wc",
+   "noark_pack_oct/s3_arjun_woc",
+   "noark_pack_oct/s3_jerome_game",
+   "noark_pack_oct/s3_jerome_wc",
+   "noark_pack_oct/s3_jerome_woc",
+   "noark_pack_oct/s3_lee_game",
+   "noark_pack_oct/s3_lee_wc",
+   "noark_pack_oct/s3_lee_woc"
+  ]
+ },
+ "roots": {
+  "coco2014_vith": {
+   "frames": 15021,
+   "files": {
+    "labels/shard_00000.npz": {
+     "bytes": 3891894,
+     "sha256": "8e249b71ff812937d341a721c6b3790c62e9fea66cf20bff74a15109ca891a11"
+    },
+    "labels/shard_00001.npz": {
+     "bytes": 3889950,
+     "sha256": "ea7ee33d11b8c24feeb237b100d040c8c96f5f9c04ed39ca72e55097ea4712eb"
+    },
+    "labels/shard_00002.npz": {
+     "bytes": 3889950,
+     "sha256": "d66a2a7b087289154e3f029ebcfd2684ed5a05794fbeeba32330e81f6f09cf1a"
+    },
+    "labels/shard_00003.npz": {
+     "bytes": 3889950,
+     "sha256": "c3bf1f9fbe42754828bde1fc93ff6f482e51abe071a4b6369dc129d18dbddc0d"
+    },
+    "labels/shard_00004.npz": {
+     "bytes": 3889950,
+     "sha256": "2eb2b74cda8119b4e42b1b8826157474507084c57cf748fca515c6436113c116"
+    },
+    "labels/shard_00005.npz": {
+     "bytes": 3891894,
+     "sha256": "5c886d22f325bb6a79b67d7f72b0ddc78022fcf6fb8b7dbfc17859e6ec781bf7"
+    },
+    "labels/shard_00006.npz": {
+     "bytes": 3889950,
+     "sha256": "2d7327ea39bcd5a2506cd3617a33b736e3fddb9152590fcdeeffe2627e3871f9"
+    },
+    "labels/shard_00007.npz": {
+     "bytes": 1982886,
+     "sha256": "41f53c4d83cee0f907aa63c26a05f0f401cb7ac70ce5af08f153f1c95729ed60"
+    }
+   }
+  },
+  "noark_pack/diwakar_game": {
+   "frames": 2598,
+   "files": {
+    "pack.bin": {
+     "bytes": 199756140,
+     "sha256": "049775994821e1b9509a2023a798acf47740c278c7d847a0c7ae80bbe15ef137"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5236280,
+     "sha256": "81319ee8ba6e704ded621abd1046ea89f23f17f088e8ab808dbb9657750a8220"
+    }
+   },
+   "subject": "diwakar",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/diwakar_wc": {
+   "frames": 1963,
+   "files": {
+    "pack.bin": {
+     "bytes": 164174920,
+     "sha256": "0dae6a05dfb027e65b67c1676b62fff30b534840910ebd4fc088fe4d918c5da2"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3941686,
+     "sha256": "4a014d9808fcf82b013bc0bcafdfb65a4710ecf9bec887f524d2e267a2051190"
+    }
+   },
+   "subject": "diwakar",
+   "session": "sep23",
+   "kind": "wc"
+  },
+  "noark_pack/diwakar_woc": {
+   "frames": 1497,
+   "files": {
+    "pack.bin": {
+     "bytes": 126381528,
+     "sha256": "1591a3078d436ffea4c38c9c3089b7ed8e76bb6e004ba7db3b4803ecb9a22aaf"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3012878,
+     "sha256": "d9d08c7af2a6f8ebe830ec5f11f5e1fadcec1c4b59b4824f027bd339c13d05bc"
+    }
+   },
+   "subject": "diwakar",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/gokul_game": {
+   "frames": 2775,
+   "files": {
+    "pack.bin": {
+     "bytes": 214377392,
+     "sha256": "d481844f3bf3b8615a8c5e7350fe1ed996add7862d9d9edc0d6af76d85ef6295"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5570558,
+     "sha256": "7041b46387d81316092295283594d53285b0ac5f4a184967c0240ef80eb9fe8e"
+    }
+   },
+   "subject": "gokul",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/gokul_wc": {
+   "frames": 1466,
+   "files": {
+    "pack.bin": {
+     "bytes": 122695614,
+     "sha256": "7e1855d7241e15371fc3e3ebe3245eac7428de2270df407d661cd86e9adb9e6a"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2932976,
+     "sha256": "9f4f065cb60bf9013f40460893674988f2e073d759dd305f4055349542faa5e7"
+    }
+   },
+   "subject": "gokul",
+   "session": "sep23",
+   "kind": "wc"
+  },
+  "noark_pack/gokul_woc": {
+   "frames": 1638,
+   "files": {
+    "pack.bin": {
+     "bytes": 135114252,
+     "sha256": "00e1cb560c4799a5872574859036864a3ba48fb69c697781defcb57282638bb2"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3283184,
+     "sha256": "bde57c36042f8ac966fbffffaa246a2f5ad47d883548b26247b7912373e2092d"
+    }
+   },
+   "subject": "gokul",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/js_game": {
+   "frames": 2865,
+   "files": {
+    "pack.bin": {
+     "bytes": 215847783,
+     "sha256": "b3bcae0b2241de29e6b21e27dafe1932e7b7e08032ec89bf6ac30c8cef11267a"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5716718,
+     "sha256": "29555a52a435001ee57819067701e97654ffd1bbbbd56adc555b57037b085cee"
+    }
+   },
+   "subject": "js",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/js_wc": {
+   "frames": 1664,
+   "files": {
+    "pack.bin": {
+     "bytes": 140654288,
+     "sha256": "cd4549e95f4304db1d225044dedb01e8d3ff489a72ed279d17abe639feb17963"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3308612,
+     "sha256": "6e9680f806df49f369d042ab5e25fff5f4e300fb604fc6d27991dbb6d58219a7"
+    }
+   },
+   "subject": "js",
+   "session": "sep23",
+   "kind": "wc"
+  },
+  "noark_pack/js_woc": {
+   "frames": 1677,
+   "files": {
+    "pack.bin": {
+     "bytes": 140361822,
+     "sha256": "b4fa4891ba285f9d5910fef8df42d10ed6970f8351900a4016d01421dd753499"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3341138,
+     "sha256": "8516af09761bbbb930d7aa6cb02994976c029983da33049c53b112ac4199713c"
+    }
+   },
+   "subject": "js",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/kabil_game": {
+   "frames": 2836,
+   "files": {
+    "pack.bin": {
+     "bytes": 219306708,
+     "sha256": "2054321996b890dfaabcd0bb25ee058498e47b7b54592f371601cf638ffb514c"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5692924,
+     "sha256": "8d12305f59509d297ed8576e3c287886e74d6b9533b79848fda4081ff75ab0f9"
+    }
+   },
+   "subject": "kabil",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/kabil_wc": {
+   "frames": 887,
+   "files": {
+    "pack.bin": {
+     "bytes": 70713628,
+     "sha256": "a976124e12a976e3f03f6dcc985a6127b7cec1f67a71a4cc29a0c95cb03ddb2f"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 1772586,
+     "sha256": "184042058064c63f7fd8aafda9a70acd7b6f915f8fa72f129406b2dcb1147835"
+    }
+   },
+   "subject": "kabil",
+   "session": "sep23",
+   "kind": "wc"
+  },
+  "noark_pack/kabil_woc": {
+   "frames": 798,
+   "files": {
+    "pack.bin": {
+     "bytes": 65153225,
+     "sha256": "21561ec4e9e3d56efe93f44916fb39834dc2cea629932e736e884b09a1f1cf8a"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 1598312,
+     "sha256": "04f404aa003dfc565453b3223048c3430ddce97b70d8f71541cb8b99995bc199"
+    }
+   },
+   "subject": "kabil",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack/ram_game": {
+   "frames": 2806,
+   "files": {
+    "pack.bin": {
+     "bytes": 210189312,
+     "sha256": "be1bf516152515223da559dde315171854eb2c7cda4071e27bbb239217e2c645"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 5610296,
+     "sha256": "0277949abc4979f8837a52e3a597fb5c3310f9c6e8cc30288bafafa81fe930e2"
+    }
+   },
+   "subject": "ram",
+   "session": "sep23",
+   "kind": "game"
+  },
+  "noark_pack/ram_wc": {
+   "frames": 603,
+   "files": {
+    "pack.bin": {
+     "bytes": 49126984,
+     "sha256": "cdab979e9bbb0e70389e1a25c86d81cf1710fb137e41604e8a9c83abb6eb8e82"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 1201466,
+     "sha256": "f47e3f0847884ebbcbed40e56fdacecec23b9b4441b3bfc81c6f435900d0bb93"
+    }
+   },
+   "subject": "ram",
+   "session": "sep23",
+   "kind": "wc"
+  },
+  "noark_pack/ram_woc": {
+   "frames": 1282,
+   "files": {
+    "pack.bin": {
+     "bytes": 105720062,
+     "sha256": "b8df7a8c103522674cfcbd46fc1fb96452d6c4632ea3d31c4c506b9914a08112"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "a241a4d94041c1b285c908137a306242d3e1c919b3e7dd6885b157db57d4d35b"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2560216,
+     "sha256": "a3ddae92ce2ca0bb3bc55b95067fae7b57a76d932e7811297dc314ab04709bd6"
+    }
+   },
+   "subject": "ram",
+   "session": "sep23",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_arjun_game": {
+   "frames": 3206,
+   "files": {
+    "pack.bin": {
+     "bytes": 303618232,
+     "sha256": "7f4ae0d4b012a2162f3f1f8971ade5bde4b35cbb6378faade2f88e007a653bae"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6473616,
+     "sha256": "4eb86c403fa98fe944ddbded00a51b023622453cdc2905aaac95cc22e6d4ae91"
+    }
+   },
+   "subject": "arjun",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_arjun_wc": {
+   "frames": 1548,
+   "files": {
+    "pack.bin": {
+     "bytes": 155321337,
+     "sha256": "7268082c537cc27de8b430fe7d637738a76740c6d29f942b1599b21f643db170"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3115388,
+     "sha256": "eb1e8e1b2a944cab1edf649d92f412370e8571979d4254ecb9c4154e3f47e7eb"
+    }
+   },
+   "subject": "arjun",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_arjun_woc": {
+   "frames": 1526,
+   "files": {
+    "pack.bin": {
+     "bytes": 156006736,
+     "sha256": "e3d58aa49e471a785d59f602806fbfa9c8107e88549e069a29fd0a5d78f0392d"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3077272,
+     "sha256": "ab591c03b1a566e2c5a9892ce6f85f171ddb95cf46be539eac4fb130ac8ca4de"
+    }
+   },
+   "subject": "arjun",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_diwakar_game": {
+   "frames": 3087,
+   "files": {
+    "pack.bin": {
+     "bytes": 303360004,
+     "sha256": "e238daa02a052c8b8c497b90aeeec50e4610fee20b545b98f1fd4e9a05bf36f6"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6258170,
+     "sha256": "60eba1c1e432e501e769508a4dfcfc9db43aaba519b4c154f039eef5d98f5b6e"
+    }
+   },
+   "subject": "diwakar",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_diwakar_wc": {
+   "frames": 1760,
+   "files": {
+    "pack.bin": {
+     "bytes": 198045968,
+     "sha256": "facdddf8e4586e5963fe839bf4622dcc56d38073aca60bd84782c11214671840"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3555588,
+     "sha256": "23f49bf03d7c557831018e9cd7878eafc0c398cd90d9d7250bbd1e074f373851"
+    }
+   },
+   "subject": "diwakar",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_diwakar_woc": {
+   "frames": 1512,
+   "files": {
+    "pack.bin": {
+     "bytes": 169033433,
+     "sha256": "e3c6af9475ed20cc479e18e89d968ea897f81580d19b5c476f26a37e47990ee7"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3061172,
+     "sha256": "ce42df47bdf54d7236ffe73ffce9c82c74c110eb7e45ed6c7506ecfa1aa1496c"
+    }
+   },
+   "subject": "diwakar",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_gokul_game": {
+   "frames": 3118,
+   "files": {
+    "pack.bin": {
+     "bytes": 294727544,
+     "sha256": "9433251b4ee994f56e4ed79de1d4d129ba73e08b2d92b5efb24cb55162c5a04e"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6296032,
+     "sha256": "5cf137229fbcc6aa4f42d3084871c6cf1184c83ce206172c74cee90715500a41"
+    }
+   },
+   "subject": "gokul",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_gokul_wc": {
+   "frames": 1562,
+   "files": {
+    "pack.bin": {
+     "bytes": 156425844,
+     "sha256": "5aaee3a7dc528b25c5ee4e98fb8e96095c2a0315aa18b69f41c8c0ae14ab76ad"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3143528,
+     "sha256": "abb762ffdfa37e423019db16a4d3b527647295790c788ad7308b070b8c2c0931"
+    }
+   },
+   "subject": "gokul",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_gokul_woc": {
+   "frames": 1508,
+   "files": {
+    "pack.bin": {
+     "bytes": 148404941,
+     "sha256": "b46223e16f4892c96d46fc5d6ed8b07773f061809919f9871e6c4117c310f882"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3041020,
+     "sha256": "1ee876a25b3439c78353e424243bfd3d58255b6e375c38354345516fd730a205"
+    }
+   },
+   "subject": "gokul",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_jerome_game": {
+   "frames": 3302,
+   "files": {
+    "pack.bin": {
+     "bytes": 321579576,
+     "sha256": "a6b5e10fcbb0072ec23bd391d7713c752a0dfc1dd5db4d14cfe582ed596dd2cf"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6680552,
+     "sha256": "d1cdf90370b6efdea8051f53d2644c7b4fd66b38c7fd8d8c5ef0e089ea216e3b"
+    }
+   },
+   "subject": "jerome",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_jerome_wc": {
+   "frames": 1734,
+   "files": {
+    "pack.bin": {
+     "bytes": 192378263,
+     "sha256": "81dac99dd9c85b79a55d9f1cf6899a5a1a87d7877e90b58fa2fe7e6336c58666"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3496184,
+     "sha256": "0dff312954fc9ea2210fd728fbd7aa697f2b867df1b2678d67712f790a46194e"
+    }
+   },
+   "subject": "jerome",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_jerome_woc": {
+   "frames": 1616,
+   "files": {
+    "pack.bin": {
+     "bytes": 177232217,
+     "sha256": "1629ce3409198f4079475c70d68d81a79c3b3978ce9f31de25d0361ae6a47eef"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3264996,
+     "sha256": "e209c68fb38143ba76932c9dbbdfbc04cde8e4ff48cba31709e7fc7912b9b6f5"
+    }
+   },
+   "subject": "jerome",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_js_game": {
+   "frames": 3158,
+   "files": {
+    "pack.bin": {
+     "bytes": 298621426,
+     "sha256": "25432a79abcbea6ed8cee1604747660975f1f7088069db3d9f821277fee40733"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6338856,
+     "sha256": "bede4ab1dacc7aa5932f5a4f8ca9e731210dae51341571b0945649db3452028c"
+    }
+   },
+   "subject": "js",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_js_wc": {
+   "frames": 1388,
+   "files": {
+    "pack.bin": {
+     "bytes": 149910149,
+     "sha256": "fb66994c7e8da5a1fd12f69e364da261b3536258f2edbb051f17a8bdc78ba9b1"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2777132,
+     "sha256": "e87701d79ebce3dfd35f2c8372ff2378ad4c1bf10654bacb7069b9ccb8dbf400"
+    }
+   },
+   "subject": "js",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_js_woc": {
+   "frames": 1617,
+   "files": {
+    "pack.bin": {
+     "bytes": 174283640,
+     "sha256": "bdb9bb8106c708626961cb10e02d7b5a27593b947061d068d9b269a6bb5d2604"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3241142,
+     "sha256": "26908209b26cfc0fffd2f85253640a34d535f5d3ac532cd7de86854c05f8dabe"
+    }
+   },
+   "subject": "js",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_lee_game": {
+   "frames": 3218,
+   "files": {
+    "pack.bin": {
+     "bytes": 320429315,
+     "sha256": "88b75838243d1f48b58e857c7ec83eaa26a795bcf83871928e4afb0ed3bdb316"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6472088,
+     "sha256": "ef55a83f3db68ec1610dce397ea59534b5b4265e164f6d5e4d54e473944d8d4a"
+    }
+   },
+   "subject": "lee",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_lee_wc": {
+   "frames": 1486,
+   "files": {
+    "pack.bin": {
+     "bytes": 122639888,
+     "sha256": "847bb9142202327405d5f9e55c6fc748b4c72867c033960f2093d7fafcc835a6"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2978880,
+     "sha256": "1de9519cf7c1e33350f9fd9510bd43298a83e6fc32289633b3f1dff2a3dd7272"
+    }
+   },
+   "subject": "lee",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_lee_woc": {
+   "frames": 1669,
+   "files": {
+    "pack.bin": {
+     "bytes": 161383875,
+     "sha256": "a92c736d173dd1e97bc313365499e5e297fb90be6ad7ded1e86da959444816c9"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 3351922,
+     "sha256": "06c0fe800cb79bc4caef7d900a9b67e70151b4f709aa6754bb33cdbbaa6224aa"
+    }
+   },
+   "subject": "lee",
+   "session": "oct",
+   "kind": "woc"
+  },
+  "noark_pack_oct/s3_ram_game": {
+   "frames": 3221,
+   "files": {
+    "pack.bin": {
+     "bytes": 305322733,
+     "sha256": "b2921ae8011a61cb28ddfb83c21720c00aa2380649ec791a08fbf45ad46c70d5"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 6478118,
+     "sha256": "9289f2e72c44983a35efce16a17409e68d3c96cb7ef79179cf0beec1edb7cdd2"
+    }
+   },
+   "subject": "ram",
+   "session": "oct",
+   "kind": "game"
+  },
+  "noark_pack_oct/s3_ram_wc": {
+   "frames": 1334,
+   "files": {
+    "pack.bin": {
+     "bytes": 137219114,
+     "sha256": "7b02da239fa1ee877faf3ab97a9ce475e474fe1fbafeb043de9937c2a4f8e1ba"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2674576,
+     "sha256": "bae8c90cf7a577a1149a5481bd65eadeb0a66acde389667e8dd9daa6a741fb90"
+    }
+   },
+   "subject": "ram",
+   "session": "oct",
+   "kind": "wc"
+  },
+  "noark_pack_oct/s3_ram_woc": {
+   "frames": 1372,
+   "files": {
+    "pack.bin": {
+     "bytes": 139234655,
+     "sha256": "2da5cc3de5ba6d2b80b4e097d77b15249b35c448f228e8a61790ffbf4ef7d9d7"
+    },
+    "camera.npz": {
+     "bytes": 920,
+     "sha256": "544adf0f945527a35e588078efe881e60fd927ddb4016430c19400c7d910a8b2"
+    },
+    "labels/shard_00000.npz": {
+     "bytes": 2756140,
+     "sha256": "ad9ef4444f2e56873200cffc1c4f9a930e5cc562e02ea76c1da6be3b3a1e728e"
+    }
+   },
+   "subject": "ram",
+   "session": "oct",
+   "kind": "woc"
+  }
+ },
+ "id": "noark_v2@65c0cf7c"
+}

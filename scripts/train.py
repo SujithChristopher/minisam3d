@@ -1,24 +1,76 @@
 """Train the student on teacher pseudo-labels.
 
   python scripts/train.py --data /data/msam_labels --out runs/v1 --epochs 60 --pretrained
+  python scripts/train.py --dataset noark_v2 --exclude ram --out runs/r18_v2_loso_ram ...
+
+--dataset takes a manifest from datasets/ (scripts/dataset.py): its split's label roots are added to --data after
+a size check against the manifest, and its id lands in <out>/run.json and every checkpoint (key "dataset").
 """
 import argparse
+import datetime
+import json
 import os
+import subprocess
 import sys
 import time
 
 import torch
 from torch.utils.data import ConcatDataset, DataLoader, random_split
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+sys.path.insert(0, ROOT)
 from minisam3d.data import PseudoLabelDataset  # noqa: E402
 from minisam3d.losses import distill_loss, evaluate  # noqa: E402
 from minisam3d.model import Student  # noqa: E402
+from scripts.dataset import load as load_manifest, parse_maps, verify as verify_manifest  # noqa: E402
+
+
+def code_hash():
+    """sha256 (12 hex) over the package and this script, as a fingerprint that survives copying the code to a
+    machine whose git checkout is stale. Line endings are normalised so Windows and Linux copies agree."""
+    import glob
+    import hashlib
+    h = hashlib.sha256()
+    for p in sorted(glob.glob(os.path.join(ROOT, "minisam3d", "*.py"))) + [os.path.abspath(__file__)]:
+        h.update(os.path.basename(p).encode() + open(p, "rb").read().replace(b"\r\n", b"\n"))
+    return h.hexdigest()[:12]
+
+
+def git_rev():
+    try:
+        rev = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "minisam3d", "scripts"], capture_output=True,
+                               text=True, cwd=ROOT).stdout.strip()
+        return rev + ("-dirty" if dirty else "") if rev else "unknown"
+    except OSError:
+        return "unknown"
+
+
+def resolve_dataset(a):
+    """Label roots of --dataset's split (minus --exclude subjects) and the record that goes into checkpoints."""
+    m = load_manifest(a.dataset)
+    maps = parse_maps(a.map)
+    roots = [r for r in m["splits"][a.split] if m["roots"][r].get("subject") not in a.exclude]
+    unknown = set(a.exclude) - {m["roots"][r].get("subject") for r in m["splits"][a.split]}
+    if unknown:
+        sys.exit(f"--exclude {sorted(unknown)}: no such subject in {m['id']} split {a.split}")
+    bad = verify_manifest(m, a.data_root, maps, roots=roots)
+    if bad:
+        sys.exit(f"data on disk does not match {m['id']}:\n  " + "\n  ".join(bad[:20]))
+    rec = dict(id=m["id"], split=a.split, exclude=sorted(a.exclude), roots=roots,
+               frames=sum(m["roots"][r]["frames"] for r in roots))
+    return [maps.get(r, os.path.join(a.data_root, r)) for r in roots], rec
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--data", nargs="+", required=True, help="one or more pseudo-label roots")
+    ap.add_argument("--data", nargs="*", default=[], help="one or more pseudo-label roots (e.g. COCO), "
+                    "trained on before the --dataset roots")
+    ap.add_argument("--dataset", help="versioned manifest: datasets/<name>.json or a path")
+    ap.add_argument("--split", default="train")
+    ap.add_argument("--exclude", nargs="*", default=[], help="subjects of --dataset to leave out (LOSO)")
+    ap.add_argument("--data-root", default="data", help="where --dataset's roots live")
+    ap.add_argument("--map", nargs="*", help="NAME=PATH for --dataset roots outside --data-root")
     ap.add_argument("--repeat", type=int, nargs="*", default=[],
                     help="per --data oversampling factor, e.g. 1 4 to weight your own footage 4x")
     ap.add_argument("--out", default="runs/v1")
@@ -46,6 +98,14 @@ def main():
     a = ap.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     H, W = a.size
+    ds_rec = None
+    if a.dataset:
+        roots, ds_rec = resolve_dataset(a)
+        a.data = a.data + roots
+        print(f"dataset {ds_rec['id']} split {ds_rec['split']} exclude {ds_rec['exclude'] or '-'}: "
+              f"{len(roots)} roots, {ds_rec['frames']} frames")
+    if not a.data:
+        ap.error("give --data and/or --dataset")
 
     kw = dict(hands=a.hands, gray=a.gray, image_dirs=a.image_dirs)
     trs, vas, tes = [], [], []
@@ -74,6 +134,16 @@ def main():
     total = a.epochs * len(dl)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, a.lr, total_steps=max(total, 1), pct_start=0.05)
     os.makedirs(a.out, exist_ok=True)
+    provenance = dict(dataset=ds_rec, data=a.data, git=git_rev(), code=code_hash())
+    run_json = os.path.join(a.out, "run.json")
+    runs = json.load(open(run_json, encoding="utf-8")).get("resumes", []) if os.path.exists(run_json) else None
+    rj = dict(provenance, args=vars(a), started=datetime.datetime.now().isoformat(timespec="seconds"))
+    if runs is not None:  # a resume keeps the first start, and logs this one
+        first = json.load(open(run_json, encoding="utf-8"))
+        rj = dict(first, resumes=runs + [dict(at=rj["started"], git=rj["git"])])
+        if first.get("dataset") and ds_rec and first["dataset"]["id"] != ds_rec["id"]:
+            sys.exit(f"{a.out} was started on {first['dataset']['id']}, not {ds_rec['id']}")
+    json.dump(rj, open(run_json, "w", encoding="utf-8"), indent=1)
     step, best, ep0 = 0, 1e9, 0
     if a.resume and os.path.exists(a.resume):
         ck = torch.load(a.resume, map_location=dev)
@@ -117,7 +187,7 @@ def main():
                 print("   per rotation joint (val deg): " + ", ".join(
                     f"{n} {d:.1f}" for n, d in zip(js["rot_names"], agg["deg_joint"])), flush=True)
         ck = dict(model=model.state_dict(), K=js["num"], hands=a.hands, size=(H, W), width=a.width, in_ch=in_ch,
-                  dec_ch=a.dec_ch, head3d=a.head3d, num_rot=num_rot, arch="v2", backbone=a.backbone)
+                  dec_ch=a.dec_ch, head3d=a.head3d, num_rot=num_rot, arch="v2", backbone=a.backbone, **provenance)
         score = agg.get("rot_deg", agg["mpjpe_mm"])  # with --rot, keep the checkpoint with the best rotations
         if score < best:
             best = score
