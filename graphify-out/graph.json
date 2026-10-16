@@ -1,0 +1,130 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "radxa_network_stack",
+        "label": "Radxa Network Authentication",
+        "nodes": [
+          "sophos_caa",
+          "qemu_user_static",
+          "systemd_sophos_service"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "radxa_network.md"
+      }
+    ],
+    "schema_version": 1,
+    "graphify_version": "0.9.83"
+  },
+  "nodes": [
+    {
+      "id": "qemu_user_static",
+      "label": "qemu-x86_64-static",
+      "community": 0,
+      "community_name": "Sophos Authentication Service",
+      "file_type": "code",
+      "norm_label": "qemu-x86_64-static",
+      "rationale": "Enables running the x86-64 Sophos agent on the ARM64 Radxa board.",
+      "source_file": "radxa_network.md"
+    },
+    {
+      "id": "sophos_caa",
+      "label": "Sophos Client Authentication Agent",
+      "community": 0,
+      "community_name": "Sophos Authentication Service",
+      "file_type": "code",
+      "norm_label": "sophos client authentication agent",
+      "rationale": "x86-64 static binary used for campus internet login, run via qemu-user-static on ARM64.",
+      "source_file": "radxa_network.md"
+    },
+    {
+      "id": "systemd_sophos_service",
+      "label": "sophos-caa.service",
+      "community": 0,
+      "community_name": "Sophos Authentication Service",
+      "file_type": "code",
+      "norm_label": "sophos-caa.service",
+      "rationale": "Systemd unit for permanent enablement of the Sophos agent.",
+      "source_file": "radxa_network.md"
+    },
+    {
+      "id": "npu_dragon_q6a",
+      "label": "Radxa Dragon Q6A",
+      "community": 1,
+      "community_name": "Radxa Dragon Q6A Hardware",
+      "file_type": "concept",
+      "norm_label": "radxa dragon q6a",
+      "rationale": "Hardware platform featuring QCM6490 SoC with Hexagon v68 HTP NPU.",
+      "source_file": "npu.md"
+    },
+    {
+      "id": "npu_w8a16_quantization",
+      "label": "W8A16 Quantization",
+      "community": 2,
+      "community_name": "Model Quantization",
+      "file_type": "concept",
+      "norm_label": "w8a16 quantization",
+      "rationale": "Recommended quantization mode for Dragon Q6A NPU; uses INT8 weights and INT16 activations.",
+      "source_file": "npu.md"
+    },
+    {
+      "id": "onnxruntime_qnn",
+      "label": "ONNX Runtime QNN EP",
+      "community": 3,
+      "community_name": "ONNX Runtime QNN Integration",
+      "file_type": "code",
+      "norm_label": "onnx runtime qnn ep",
+      "rationale": "Execution provider for Qualcomm NPUs using QDQ ONNX models.",
+      "source_file": "npu.md"
+    },
+    {
+      "id": "qualcomm_ai_hub",
+      "label": "Qualcomm AI Hub",
+      "community": 4,
+      "community_name": "Qualcomm AI Platform",
+      "file_type": "concept",
+      "norm_label": "qualcomm ai hub",
+      "rationale": "Cloud service used for model quantization and compilation for the Hexagon NPU.",
+      "source_file": "npu.md"
+    }
+  ],
+  "links": [
+    {
+      "source": "sophos_caa",
+      "target": "qemu_user_static",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "rationale": "The agent is an x86-64 binary running on ARM64 via QEMU emulation.",
+      "source_file": "radxa_network.md"
+    },
+    {
+      "source": "systemd_sophos_service",
+      "target": "sophos_caa",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "radxa_network.md"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "radxa_network_stack",
+      "label": "Radxa Network Authentication",
+      "nodes": [
+        "sophos_caa",
+        "qemu_user_static",
+        "systemd_sophos_service"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "radxa_network.md"
+    }
+  ],
+  "built_at_commit": "9f15bd855d08ced01b8d28981696c79472f025cc"
+}

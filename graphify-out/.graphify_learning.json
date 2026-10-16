@@ -1,0 +1,90 @@
+{
+  "generated_at": "2026-10-15T05:31:27.030019+00:00",
+  "nodes": {
+    "npu_dragon_q6a": {
+      "code_fingerprint": "c51f3356abe90f99c74c42765bbb6b5ba0c245e84c921de856894b9187a3a6db",
+      "label": "Radxa Dragon Q6A",
+      "last": "2026-10-12T04:52:25.750633+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-12T04:52:25.750633+00:00",
+          "outcome": "useful",
+          "q": "for the CV, can we also add minisam, and look at cv to see if we can make some professional design improvements. A good academic look, seems like there is not clear distinction between section, so visually not that great at the moment"
+        },
+        {
+          "date": "2026-10-10T00:53:32.622540+00:00",
+          "outcome": "useful",
+          "q": "what other information from our previous records are useful?"
+        }
+      ],
+      "score": 1.819384016,
+      "source_file": "npu.md",
+      "status": "preferred",
+      "uses": 2
+    },
+    "npu_w8a16_quantization": {
+      "code_fingerprint": "c51f3356abe90f99c74c42765bbb6b5ba0c245e84c921de856894b9187a3a6db",
+      "label": "W8A16 Quantization",
+      "last": "2026-10-12T04:52:25.750633+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-12T04:52:25.750633+00:00",
+          "outcome": "useful",
+          "q": "for the CV, can we also add minisam, and look at cv to see if we can make some professional design improvements. A good academic look, seems like there is not clear distinction between section, so visually not that great at the moment"
+        },
+        {
+          "date": "2026-10-10T00:53:32.622540+00:00",
+          "outcome": "useful",
+          "q": "what other information from our previous records are useful?"
+        }
+      ],
+      "score": 1.819384016,
+      "source_file": "npu.md",
+      "status": "preferred",
+      "uses": 2
+    },
+    "onnxruntime_qnn": {
+      "code_fingerprint": "c51f3356abe90f99c74c42765bbb6b5ba0c245e84c921de856894b9187a3a6db",
+      "label": "ONNX Runtime QNN EP",
+      "last": "2026-10-12T04:52:25.750633+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-12T04:52:25.750633+00:00",
+          "outcome": "useful",
+          "q": "for the CV, can we also add minisam, and look at cv to see if we can make some professional design improvements. A good academic look, seems like there is not clear distinction between section, so visually not that great at the moment"
+        },
+        {
+          "date": "2026-10-10T00:53:32.622540+00:00",
+          "outcome": "useful",
+          "q": "what other information from our previous records are useful?"
+        }
+      ],
+      "score": 1.819384016,
+      "source_file": "npu.md",
+      "status": "preferred",
+      "uses": 2
+    },
+    "qualcomm_ai_hub": {
+      "code_fingerprint": "c51f3356abe90f99c74c42765bbb6b5ba0c245e84c921de856894b9187a3a6db",
+      "label": "Qualcomm AI Hub",
+      "last": "2026-10-12T04:52:25.750633+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-12T04:52:25.750633+00:00",
+          "outcome": "useful",
+          "q": "for the CV, can we also add minisam, and look at cv to see if we can make some professional design improvements. A good academic look, seems like there is not clear distinction between section, so visually not that great at the moment"
+        },
+        {
+          "date": "2026-10-10T00:53:32.622540+00:00",
+          "outcome": "useful",
+          "q": "what other information from our previous records are useful?"
+        }
+      ],
+      "score": 1.819384016,
+      "source_file": "npu.md",
+      "status": "preferred",
+      "uses": 2
+    }
+  },
+  "version": 1
+}

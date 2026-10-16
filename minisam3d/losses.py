@@ -25,7 +25,9 @@ def rot_out(out, R):
     return rot6d_to_mat(out[2].reshape(len(out[2]), R, 6))
 
 
-def distill_loss(out, batch, js, w2d=1.0, w3d=1.0, whm=1.0, wbone=0.5, wrot=1.0):
+def distill_loss(out, batch, js, w2d=1.0, w3d=1.0, whm=1.0, wbone=0.5, wrot=1.0, rot_jw=None):
+    """rot_jw: optional (R,) per-rotation-joint weight (e.g. trunk x3); normalised by the unweighted count, so
+    upweighting one joint adds to the loss instead of taking weight from the others."""
     K = js["num"]
     uv_p, xyz_p, _ = decode(out, K)
     maps = out[0] if isinstance(out, (tuple, list)) else out
@@ -46,7 +48,8 @@ def distill_loss(out, batch, js, w2d=1.0, w3d=1.0, whm=1.0, wbone=0.5, wrot=1.0)
     parts = dict(l2d=l2d.item(), lhm=lhm.item(), l3d=l3d.item(), lbone=lbone.item())
     if isinstance(out, (tuple, list)) and len(out) > 2:  # rotation head; wrot = 0 where the label has none
         wr = batch["wrot"]
-        lrot = (geodesic(rot_out(out, wr.shape[1]), batch["rot"]) * wr).sum() / wr.sum().clamp(min=1)
+        jw = wr if rot_jw is None else wr * rot_jw
+        lrot = (geodesic(rot_out(out, wr.shape[1]), batch["rot"]) * jw).sum() / wr.sum().clamp(min=1)
         total = total + wrot * lrot
         parts["lrot"] = lrot.item()
     return total, parts
@@ -54,7 +57,14 @@ def distill_loss(out, batch, js, w2d=1.0, w3d=1.0, whm=1.0, wbone=0.5, wrot=1.0)
 
 @torch.no_grad()
 def metric_sums(out, batch, js, in_px):
-    """Per-joint sums for aggregation over a dataset: 2D px error over visible joints, 3D error (mm) over all."""
+    """Per-joint sums for aggregation over a dataset: 2D px error over visible joints, 3D error (mm) over all.
+    Callers run the model under bf16 autocast; the metrics themselves must not be, or the rotation acos
+    quantises to steps of a few degrees (cos(5 deg) is within bf16's spacing of 1)."""
+    with torch.autocast(out[0].device.type if isinstance(out, (tuple, list)) else out.device.type, enabled=False):
+        return _metric_sums(out, batch, js, in_px)
+
+
+def _metric_sums(out, batch, js, in_px):
     out = tuple(o.float() for o in out) if isinstance(out, (tuple, list)) else out.float()  # bf16 under --amp
     uv_p, xyz_p, _ = decode(out, js["num"])
     vis = batch["vis"]
@@ -63,7 +73,8 @@ def metric_sums(out, batch, js, in_px):
     s = dict(px=(px * vis).sum(0), vis=vis.sum(0), mm=mm.sum(0), n=torch.tensor(float(len(mm)), device=mm.device))
     if isinstance(out, (tuple, list)) and len(out) > 2:
         wr = batch["wrot"]
-        s["deg"] = (torch.rad2deg(geodesic(rot_out(out, wr.shape[1]), batch["rot"])) * wr).sum(0)
+        Rp = rot_out(tuple(o.double() for o in out), wr.shape[1])
+        s["deg"] = (torch.rad2deg(geodesic(Rp, batch["rot"].double())).float() * wr).sum(0)
         s["nrot"] = wr.sum(0)
     return s
 

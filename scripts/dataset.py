@@ -13,7 +13,8 @@ into run.json and every checkpoint, so a model can always be traced to the exact
 
 Labels-only roots that live outside the data root are mapped with --map NAME=PATH (build and verify), e.g.
 --map coco2014_vith=E:/NOARK_CV/msam_labels/coco2014_vith. push copies only roots it finds under --root and
-whose remote copy differs in size; the SSH password comes from $MSAM_SSH_PASSWORD or a prompt, never a file.
+whose remote copy differs in size; it logs in with the key of an ~/.ssh/config alias (gpubox), else the password
+from $MSAM_SSH_PASSWORD or a prompt, never a file.
 """
 import argparse
 import datetime
@@ -159,11 +160,19 @@ def cmd_push(a):
     import paramiko
     m = load(a.name)
     host, rdir = a.remote.split(":", 1)
-    user, host = host.split("@", 1)
-    pw = os.environ.get("MSAM_SSH_PASSWORD") or getpass.getpass(f"{user}@{host} password: ")
+    user, host = host.split("@", 1) if "@" in host else (None, host)
+    # an ~/.ssh/config alias (e.g. gpubox) supplies host, user and key; the password is only the fallback
+    cfg_path = os.path.expanduser("~/.ssh/config")
+    cfg = paramiko.SSHConfig.from_path(cfg_path).lookup(host) if os.path.exists(cfg_path) else {}
+    host, user = cfg.get("hostname", host), user or cfg.get("user")
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    c.connect(host, username=user, password=pw, timeout=15, allow_agent=False, look_for_keys=False)
+    try:
+        c.connect(host, username=user, key_filename=[os.path.expanduser(k) for k in cfg.get("identityfile", [])],
+                  timeout=15, allow_agent=False, look_for_keys=not cfg.get("identityfile"))
+    except paramiko.AuthenticationException:
+        pw = os.environ.get("MSAM_SSH_PASSWORD") or getpass.getpass(f"{user}@{host} password: ")
+        c.connect(host, username=user, password=pw, timeout=15, allow_agent=False, look_for_keys=False)
     c.get_transport().window_size = 2 ** 27
 
     def sh(cmd):

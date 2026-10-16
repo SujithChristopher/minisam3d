@@ -25,7 +25,7 @@ versioning. Their `run.json` is back-filled as `noark_v1` (same takes and file s
 python scripts/dataset.py build noark_v3 --train coco2014_vith 'noark_pack/*' ... --test ... --note "..." \
        --map coco2014_vith=E:/NOARK_CV/msam_labels/coco2014_vith      # roots outside data/
 python scripts/dataset.py verify noark_v2 [--full]                    # sizes; --full also sha256
-MSAM_SSH_PASSWORD=... python scripts/dataset.py push noark_v2 --remote parvathy@172.17.13.173:minisam3d
+python scripts/dataset.py push noark_v2 --remote gpubox:minisam3d          # ~/.ssh/config alias, see below
 python scripts/dataset.py runs                                        # every run and what it trained on
 
 # train / evaluate
@@ -35,4 +35,18 @@ python scripts/eval_teacher.py --dataset noark_v2 --ckpt runs/a/best.pt runs/b/b
 ```
 
 `push` sends only roots whose remote file sizes differ, streamed as tar. It then checks sha256 on the remote and
-copies the manifest. The password is read from `$MSAM_SSH_PASSWORD` or a prompt and is never written anywhere.
+copies the manifest. It logs in with the key of an `~/.ssh/config` alias; without one (or if the key is refused) it
+falls back to the password from `$MSAM_SSH_PASSWORD` or a prompt, which is never written anywhere.
+
+GPU box alias (key `~/.ssh/id_ed25519_gpubox`, installed in the box's `~/.ssh/authorized_keys`):
+
+```
+Host gpubox
+    HostName 172.17.13.173
+    User parvathy
+    IdentityFile ~/.ssh/id_ed25519_gpubox
+    IdentitiesOnly yes
+```
+
+The box reaches the internet only through the campus proxy. Non-login shells (`ssh gpubox cmd`, tmux started
+that way) skip `.bashrc`, so `source ~/proxy.sh` first for `uv sync` and other downloads.

@@ -1,0 +1,73 @@
+{
+  "communities": {
+    "0": [
+      "qemu_user_static",
+      "sophos_caa",
+      "systemd_sophos_service"
+    ],
+    "1": [
+      "npu_dragon_q6a"
+    ],
+    "2": [
+      "npu_w8a16_quantization"
+    ],
+    "3": [
+      "onnxruntime_qnn"
+    ],
+    "4": [
+      "qualcomm_ai_hub"
+    ]
+  },
+  "cohesion": {
+    "0": 0.6666666666666666,
+    "1": 1.0,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 1.0
+  },
+  "gods": [
+    {
+      "id": "sophos_caa",
+      "label": "Sophos Client Authentication Agent",
+      "degree": 2
+    },
+    {
+      "id": "qemu_user_static",
+      "label": "qemu-x86_64-static",
+      "degree": 1
+    },
+    {
+      "id": "systemd_sophos_service",
+      "label": "sophos-caa.service",
+      "degree": 1
+    },
+    {
+      "id": "npu_dragon_q6a",
+      "label": "Radxa Dragon Q6A",
+      "degree": 0
+    },
+    {
+      "id": "npu_w8a16_quantization",
+      "label": "W8A16 Quantization",
+      "degree": 0
+    },
+    {
+      "id": "onnxruntime_qnn",
+      "label": "ONNX Runtime QNN EP",
+      "degree": 0
+    },
+    {
+      "id": "qualcomm_ai_hub",
+      "label": "Qualcomm AI Hub",
+      "degree": 0
+    }
+  ],
+  "surprises": [],
+  "questions": [
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `qemu-x86_64-static`, `sophos-caa.service`, `Radxa Dragon Q6A` to the rest of the system?",
+      "why": "6 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}

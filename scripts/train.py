@@ -15,7 +15,8 @@ import sys
 import time
 
 import torch
-from torch.utils.data import ConcatDataset, DataLoader, random_split
+import numpy as np
+from torch.utils.data import ConcatDataset, DataLoader, WeightedRandomSampler, random_split
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 sys.path.insert(0, ROOT)
@@ -62,6 +63,22 @@ def resolve_dataset(a):
     return [maps.get(r, os.path.join(a.data_root, r)) for r in roots], rec
 
 
+def trunk_angle_weights(ds, idx, root, A):
+    """Sampling weight per training frame: 1 + A * min(angle, 40 deg)/20 deg, where angle is the trunk rotation
+    away from the take's mean (chordal mean), normalised to mean 1 per root. Only for noark_pack roots (one subject and camera per root);
+    other roots (COCO) keep weight 1."""
+    idx = np.asarray(idx)
+    if "noark_pack" not in root.replace("\\", "/") or "rot" not in ds.L:
+        return np.ones(len(idx))
+    R = ds.L["rot"][idx, ds.js["rot_names"].index("trunk")].astype(np.float64)
+    u, _, vt = np.linalg.svd(R.mean(0))
+    Rm = u @ np.diag([1, 1, np.linalg.det(u @ vt)]) @ vt
+    c = (np.einsum("ij,nij->n", Rm, R) - 1) / 2
+    ang = np.degrees(np.arccos(np.clip(c, -1, 1)))
+    w = 1 + A * np.minimum(ang, 40) / 20
+    return w / w.mean()  # reweight within the take only; each root keeps its share of the epoch
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", nargs="*", default=[], help="one or more pseudo-label roots (e.g. COCO), "
@@ -95,6 +112,11 @@ def main():
     ap.add_argument("--amp", action="store_true", help="bf16 autocast for the network (about half the "
                     "activation memory; keeps an 8 GB GPU from spilling into shared memory)")
     ap.add_argument("--resume", help="checkpoint to continue from (Colab disconnects)")
+    ap.add_argument("--trunk-w", type=float, default=1.0, help="rotation-loss weight of the trunk joint "
+                    "(the arm joints keep 1)")
+    ap.add_argument("--angle-sample", type=float, default=0.0, help="oversample large trunk angles in the "
+                    "noark_pack roots: weight 1 + A * min(angle, 40)/20 (mean 1 per take), angle = trunk rotation away from the "
+                    "take's mean (0 = uniform sampling)")
     a = ap.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     H, W = a.size
@@ -108,17 +130,26 @@ def main():
         ap.error("give --data and/or --dataset")
 
     kw = dict(hands=a.hands, gray=a.gray, image_dirs=a.image_dirs)
-    trs, vas, tes = [], [], []
+    trs, vas, tes, sw = [], [], [], []
     for k, root in enumerate(a.data):
         full = PseudoLabelDataset(root, H, W, train=True, **kw)
         n_val = max(1, len(full) // 50)
         tr, va = random_split(full, [len(full) - n_val, n_val], generator=torch.Generator().manual_seed(0))
-        trs += [tr] * (a.repeat[k] if k < len(a.repeat) else 1)
+        rep = a.repeat[k] if k < len(a.repeat) else 1
+        trs += [tr] * rep
+        if a.angle_sample:
+            sw += [trunk_angle_weights(full, tr.indices, root, a.angle_sample)] * rep
         clean = PseudoLabelDataset(root, H, W, train=False, **kw)
         vas.append(torch.utils.data.Subset(clean, va.indices))
         tes.append(torch.utils.data.Subset(clean, tr.indices[:n_val]))  # same size, no augmentation
     tr, va, te, js = ConcatDataset(trs), ConcatDataset(vas), ConcatDataset(tes), full.js
-    dl = DataLoader(tr, a.bs, shuffle=True, num_workers=a.workers, drop_last=len(tr) > a.bs, pin_memory=True)
+    sampler = None
+    if a.angle_sample:
+        w = np.concatenate(sw)
+        print(f"angle sampling A={a.angle_sample}: weight mean {w.mean():.2f}, max {w.max():.2f}")
+        sampler = WeightedRandomSampler(torch.from_numpy(w), len(w), replacement=True)
+    dl = DataLoader(tr, a.bs, shuffle=sampler is None, sampler=sampler, num_workers=a.workers,
+                    drop_last=len(tr) > a.bs, pin_memory=True)
     vl = DataLoader(va, a.bs, num_workers=a.workers)
     tl = DataLoader(te, a.bs, num_workers=a.workers)  # train-set error: if close to val, the model underfits
 
@@ -130,6 +161,10 @@ def main():
         miss, unexp = model.load_state_dict(torch.load(a.init, map_location=dev)["model"], strict=False)
         print(f"init from {a.init}: missing {len(miss)} keys {sorted({k.split('.')[0] for k in miss})}, "
               f"unexpected {len(unexp)}")
+    rot_jw = None
+    if num_rot and a.trunk_w != 1.0:
+        rot_jw = torch.ones(num_rot, device=dev)
+        rot_jw[js["rot_names"].index("trunk")] = a.trunk_w
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=1e-4)
     total = a.epochs * len(dl)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, a.lr, total_steps=max(total, 1), pct_start=0.05)
@@ -160,7 +195,7 @@ def main():
             with torch.autocast("cuda", dtype=torch.bfloat16, enabled=a.amp and dev == "cuda"):
                 out = model(b["img"])
             out = tuple(o.float() for o in out) if isinstance(out, tuple) else out.float()  # loss in fp32
-            loss, parts = distill_loss(out, b, js)
+            loss, parts = distill_loss(out, b, js, rot_jw=rot_jw)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
